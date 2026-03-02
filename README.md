@@ -10,6 +10,53 @@ Lightweight Python tooling for researchers who want to:
 
 This public repo contains only the distributable package, wrapper scripts, templates, and run instructions.
 
+## Fastest Start: Local Ollama + Zotero
+
+If you want the shortest path to a working local setup:
+
+```bash
+git clone https://github.com/ayushkanwal/autopaper-researcher.git
+cd autopaper-researcher
+cp examples/ollama_local.env .env.local
+```
+
+Edit `.env.local` and set at least:
+
+```bash
+ZOTERO_USER_ID=your_zotero_user_id
+ZOTERO_API_KEY=your_zotero_api_key
+AUTOPAPER_COLLECTION_NAME=autopaper-ingested
+AUTOPAPER_QUERIES_JSON=["all:\"multivariate time series\" AND (all:forecasting OR all:prediction)"]
+AUTOPAPER_BOOST_TERMS_JSON=["multivariate","forecasting","retrieval"]
+AUTOPAPER_PENALTY_TERMS_JSON=["stock price","cryptocurrency"]
+```
+
+Start Ollama:
+
+```bash
+ollama pull qwen2.5:3b-instruct
+ollama serve
+```
+
+Run a dry-run first:
+
+```bash
+./scripts/bootstrap_and_run.sh --env-file .env.local --dry-run
+```
+
+Then run the real ingest:
+
+```bash
+./scripts/bootstrap_and_run.sh --env-file .env.local
+```
+
+What this does:
+- searches `arXiv`, `PubMed`, and `OpenAlex`
+- ranks results using your preset and keyword overrides
+- summarizes selected papers with local Ollama
+- adds them to Zotero with notes
+- optionally imports real PDFs if `AUTOPAPER_ATTACH_REAL_PDFS=true`
+
 ## Features
 
 Paper ingest:
@@ -54,6 +101,8 @@ If you want a single command that sets up `.venv`, installs the package, validat
 ```
 
 ## Quick Start
+
+If you just want the shortest working path, use the `Fastest Start: Local Ollama + Zotero` section above. The rest of this README explains the same setup in more detail.
 
 ### 1. Create a config file
 
