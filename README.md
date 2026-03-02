@@ -28,6 +28,10 @@ Search and summarization are separate:
 - paper discovery uses the built-in source adapters: `arXiv`, `PubMed`, and `OpenAlex`
 - local Ollama or other LLM providers are only used to generate summary notes after papers are found and ranked
 
+Ranking is intentionally generic in the core package:
+- researcher-specific relevance should be controlled with presets plus `AUTOPAPER_BOOST_TERMS_JSON`, `AUTOPAPER_PENALTY_TERMS_JSON`, `AUTOPAPER_INCLUDE_TERMS_JSON`, and `AUTOPAPER_EXCLUDE_TERMS_JSON`
+- avoid hardcoding domain logic into the shared ranking engine
+
 Zotero maintenance:
 - back up stored Zotero attachments locally
 - optionally delete backed-up remote attachments
