@@ -13,7 +13,6 @@ from autopaper.cleanup import (
     purge_attachments,
 )
 from autopaper.config import ConfigError, config_as_json, resolve_runtime_config
-from autopaper.daemon import run_daemon
 from autopaper.job_runner import execute_run
 from autopaper.launchd import build_launchd_plist, launchd_label, write_launchd_plist
 from autopaper.logging import configure_logger
@@ -209,6 +208,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if not report.failures else 1
 
     if args.command == "daemon":
+        from autopaper.daemon import run_daemon
+
         return run_daemon(config)
 
     parser.error(f"Unhandled command: {args.command}")

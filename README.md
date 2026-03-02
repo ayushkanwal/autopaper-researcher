@@ -24,6 +24,10 @@ Paper ingest:
 - write Markdown and JSON reports
 - keep local SQLite run/state tracking
 
+Search and summarization are separate:
+- paper discovery uses the built-in source adapters: `arXiv`, `PubMed`, and `OpenAlex`
+- local Ollama or other LLM providers are only used to generate summary notes after papers are found and ranked
+
 Zotero maintenance:
 - back up stored Zotero attachments locally
 - optionally delete backed-up remote attachments
@@ -38,6 +42,12 @@ pip install -e .
 ```
 
 This installs the `autopaper` CLI and dependencies.
+
+If you want a single command that sets up `.venv`, installs the package, validates the config, and runs the tool, use:
+
+```bash
+./scripts/bootstrap_and_run.sh --env-file .env.local --dry-run
+```
 
 ## Quick Start
 
@@ -183,6 +193,20 @@ autopaper run-once --env-file .env.local --dry-run
 
 ```bash
 autopaper run-once --env-file .env.local
+```
+
+### One-command run
+
+After `.env.local` is ready:
+
+```bash
+./scripts/bootstrap_and_run.sh --env-file .env.local
+```
+
+To start the foreground scheduler instead:
+
+```bash
+./scripts/bootstrap_and_run.sh --env-file .env.local --daemon
 ```
 
 ## Main Commands
