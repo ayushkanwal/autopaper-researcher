@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auto-paper-populator"
+version = "0.3.0"
+description = "Distributable research paper ingest daemon for Zotero"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "requests>=2.31.0",
+  "python-dotenv>=1.0.1",
+  "APScheduler>=3.10.4",
+  "python-dateutil>=2.9.0",
+]
+
+[project.scripts]
+autopaper = "autopaper.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
