@@ -60,6 +60,36 @@ What this does:
 - adds them to Zotero with structured notes
 - optionally imports real PDFs if `AUTOPAPER_ATTACH_REAL_PDFS=true`
 
+## Architecture
+
+```mermaid
+flowchart LR
+    A["Preset + .env.local"] --> B["Query Builder"]
+    B --> C["Search Sources"]
+    C --> C1["arXiv"]
+    C --> C2["PubMed"]
+    C --> C3["OpenAlex"]
+    C1 --> D["Normalize + Merge Duplicates"]
+    C2 --> D
+    C3 --> D
+    D --> E["Generic Ranking Engine"]
+    E --> F["Top Candidates"]
+    F --> G["Zotero Dedupe Check"]
+    G --> H["Summary Provider"]
+    H --> H1["offline"]
+    H --> H2["OpenAI-compatible / Ollama"]
+    H --> H3["custom command"]
+    H1 --> I["Structured Note"]
+    H2 --> I
+    H3 --> I
+    G --> J["PDF / Code Discovery"]
+    I --> K["Zotero Ingest"]
+    J --> K
+    K --> L["Collection Item + Note + Optional PDF"]
+    K --> M["Markdown / JSON Report"]
+    K --> N["SQLite State"]
+```
+
 ## Core Concepts
 
 ### Search
