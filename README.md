@@ -67,6 +67,94 @@ Useful optional values:
 - `PUBMED_API_KEY`
 - `GITHUB_TOKEN`
 
+### 2a. Edit the search setup
+
+The most important search controls live in `.env.local`:
+
+- `AUTOPAPER_QUERY_PRESET`
+  - choose a built-in preset such as `general_time_series_v1` or `livestock_decision_support_v2`
+- `AUTOPAPER_QUERIES_JSON`
+  - add your own extra search queries as a JSON array of strings
+- `AUTOPAPER_SOURCES`
+  - choose which search sources to use, for example `arxiv,pubmed,openalex`
+- `AUTOPAPER_MIN_RELEVANCE_SCORE`
+  - raise this if results are too broad, lower it if too few papers are added
+- `AUTOPAPER_BOOST_TERMS_JSON`
+  - terms that should increase ranking
+- `AUTOPAPER_PENALTY_TERMS_JSON`
+  - terms that should decrease ranking
+- `AUTOPAPER_INCLUDE_TERMS_JSON`
+  - terms that must appear for a paper to be considered
+- `AUTOPAPER_EXCLUDE_TERMS_JSON`
+  - terms that should filter papers out completely
+
+Example:
+
+```bash
+AUTOPAPER_QUERY_PRESET=general_time_series_v1
+AUTOPAPER_QUERIES_JSON=["all:\"causal time series\" AND (all:forecasting OR all:prediction)","all:\"time series\" AND (all:retrieval OR all:rag)"]
+AUTOPAPER_SOURCES=arxiv,pubmed,openalex
+AUTOPAPER_BOOST_TERMS_JSON=["causal","retrieval","rag","multivariate"]
+AUTOPAPER_PENALTY_TERMS_JSON=["stock price","cryptocurrency"]
+```
+
+### 2b. Set the Zotero target
+
+These variables are what make the tool usable at all:
+
+- `ZOTERO_USER_ID`
+- `ZOTERO_API_KEY`
+- `AUTOPAPER_COLLECTION_NAME`
+
+Example:
+
+```bash
+ZOTERO_USER_ID=1234567
+ZOTERO_API_KEY=your_zotero_api_key
+AUTOPAPER_COLLECTION_NAME=autopaper-ingested
+```
+
+The ingest pipeline writes to Zotero. Without those values, it cannot add papers or notes.
+
+### 2c. Choose how summaries are generated
+
+Summary generation is controlled by:
+
+- `AUTOPAPER_SUMMARIZER`
+  - `offline`
+  - `openai_compatible`
+  - `command`
+- `AUTOPAPER_SUMMARY_FALLBACK`
+- `AUTOPAPER_LLM_BASE_URL`
+- `AUTOPAPER_LLM_API_KEY`
+- `AUTOPAPER_LLM_MODEL`
+- `AUTOPAPER_SUMMARY_COMMAND`
+
+Offline only:
+
+```bash
+AUTOPAPER_SUMMARIZER=offline
+AUTOPAPER_SUMMARY_FALLBACK=offline
+```
+
+OpenAI-compatible LLM:
+
+```bash
+AUTOPAPER_SUMMARIZER=openai_compatible
+AUTOPAPER_SUMMARY_FALLBACK=offline
+AUTOPAPER_LLM_BASE_URL=https://api.openai.com/v1
+AUTOPAPER_LLM_API_KEY=your_api_key
+AUTOPAPER_LLM_MODEL=gpt-4.1-mini
+```
+
+External command:
+
+```bash
+AUTOPAPER_SUMMARIZER=command
+AUTOPAPER_SUMMARY_FALLBACK=offline
+AUTOPAPER_SUMMARY_COMMAND=python3 my_custom_summary_pipeline.py
+```
+
 ### 3. Validate config
 
 ```bash
@@ -182,6 +270,12 @@ The package supports:
 - per-researcher env files
 - optional summary providers
 - all current built-in presets use the full supported source set by default: `arxiv`, `pubmed`, and `openalex`
+
+If you want to see exactly what a preset resolves to, run:
+
+```bash
+autopaper print-effective-config --env-file .env.local
+```
 
 ## Summary Providers
 
