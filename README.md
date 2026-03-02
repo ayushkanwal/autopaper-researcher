@@ -147,6 +147,18 @@ AUTOPAPER_LLM_API_KEY=your_api_key
 AUTOPAPER_LLM_MODEL=gpt-4.1-mini
 ```
 
+Local Ollama:
+
+```bash
+AUTOPAPER_SUMMARIZER=openai_compatible
+AUTOPAPER_SUMMARY_FALLBACK=offline
+AUTOPAPER_LLM_BASE_URL=http://127.0.0.1:11434/v1
+AUTOPAPER_LLM_API_KEY=
+AUTOPAPER_LLM_MODEL=qwen2.5:3b-instruct
+```
+
+This path is tested against Ollama's OpenAI-compatible endpoint. Localhost endpoints do not require an API key.
+
 External command:
 
 ```bash
@@ -296,6 +308,45 @@ Set:
 - `AUTOPAPER_LLM_API_KEY`
 - `AUTOPAPER_LLM_MODEL`
 
+### Local Ollama
+
+Tested setup:
+
+```bash
+ollama pull qwen2.5:3b-instruct
+ollama serve
+```
+
+Then use either:
+
+```bash
+cp examples/ollama_local.env .env.local
+```
+
+or set these values in your existing `.env.local`:
+
+```bash
+AUTOPAPER_SUMMARIZER=openai_compatible
+AUTOPAPER_SUMMARY_FALLBACK=offline
+AUTOPAPER_LLM_BASE_URL=http://127.0.0.1:11434/v1
+AUTOPAPER_LLM_API_KEY=
+AUTOPAPER_LLM_MODEL=qwen2.5:3b-instruct
+```
+
+Quick checks:
+
+```bash
+curl -sS http://127.0.0.1:11434/v1/models
+autopaper validate-config --env-file .env.local
+autopaper run-once --env-file .env.local --dry-run
+```
+
+Notes:
+- Ollama is wired through the same `openai_compatible` summary provider.
+- `AUTOPAPER_LLM_API_KEY` can be blank for local Ollama.
+- Smaller local models are easier to run continuously. `qwen2.5:3b-instruct` is a practical starting point.
+- If the local model fails or is too slow, keep `AUTOPAPER_SUMMARY_FALLBACK=offline`.
+
 ### External Command
 
 Set:
@@ -309,6 +360,7 @@ The command receives JSON on stdin and must return the expected summary JSON pay
 - `.env.example`
 - `examples/researcher_template.env`
 - `examples/livestock_decision_support.env`
+- `examples/ollama_local.env`
 
 ## Legacy Script Wrappers
 

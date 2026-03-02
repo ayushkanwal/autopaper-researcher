@@ -5,6 +5,7 @@ import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
+from urllib.parse import urlparse
 
 from .query_presets import DEFAULT_PRESET, QueryPreset, get_preset
 from .utils import comma_split, load_env_file, mask_secret, parse_bool, parse_json_array
@@ -96,6 +97,13 @@ COMMON_ENV_KEYS = {
 
 class ConfigError(ValueError):
     pass
+
+
+def llm_base_url_is_local(llm_base_url: Optional[str]) -> bool:
+    if not llm_base_url:
+        return False
+    host = (urlparse(llm_base_url).hostname or "").lower()
+    return host in {"127.0.0.1", "localhost", "::1"}
 
 
 
@@ -246,11 +254,12 @@ def validate_runtime_config(config: RuntimeConfig, command: str = "run-once") ->
             key
             for key, value in {
                 "AUTOPAPER_LLM_BASE_URL": config.llm_base_url,
-                "AUTOPAPER_LLM_API_KEY": config.llm_api_key,
                 "AUTOPAPER_LLM_MODEL": config.llm_model,
             }.items()
             if not value
         ]
+        if not config.llm_api_key and not llm_base_url_is_local(config.llm_base_url):
+            missing.append("AUTOPAPER_LLM_API_KEY")
         if missing:
             raise ConfigError(f"Missing LLM configuration: {', '.join(missing)}")
     if config.summarizer == "command" and not config.summary_command:
